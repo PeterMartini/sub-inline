@@ -1,0 +1,6 @@
+*.o
+Inline.bs
+Inline.c
+Makefile
+blib/
+pm_to_blib

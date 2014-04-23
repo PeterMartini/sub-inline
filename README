@@ -1,0 +1,21 @@
+This is the README file for Sub::Inline, a module to allow creating
+sub definitions that are replaced by the OP tree that makes it up
+at compile time.
+
+* Installation
+
+Sub::Inline uses the standard perl module install process:
+
+perl Makefile.PL
+make
+make test
+make install
+
+* Copyright
+
+Copyright 2014 by Peter Martini <pcm@cpan.org>.
+
+All rights reserved.  You can redistribute and/or modify
+this bundle under the same terms as Perl itself.
+
+See <http://www.perl.com/perl/misc/Artistic.html>.
