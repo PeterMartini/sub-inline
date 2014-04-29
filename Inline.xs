@@ -2,6 +2,7 @@
 #include "perl.h"
 #include "XSUB.h"
 #include "lexicals.h"
+#include "clone_op.h"
 
 /*
  *    This file has the main components of the Sub::Inline plugin:
@@ -15,7 +16,8 @@
 
 static OP * inline_cv(pTHX_ OP *op, GV *namegv, SV *ckobj)
 {
-    return op;
+    OP *o = clone_op(CvROOT((CV*)ckobj));
+    return o;
 }
 
 #define BUFPTR PL_parser->bufptr
@@ -25,7 +27,6 @@ static int inline_keyword_handler(pTHX_ char *keyword_ptr, STRLEN keyword_len, O
 {
     STRLEN namepos = 0;
     char name[sizeof PL_parser->tokenbuf];
-    SV *subnamesv;
 
     if (keyword_len != strlen("inline") || memcmp(keyword_ptr, "inline", keyword_len))
         return old_plugin(aTHX_ keyword_ptr, keyword_len, op_ptr);
@@ -38,6 +39,8 @@ static int inline_keyword_handler(pTHX_ char *keyword_ptr, STRLEN keyword_len, O
         !isSPACE(BUFPTR[0]))
         return old_plugin(aTHX_ keyword_ptr, keyword_len, op_ptr);
 
+    save_item(PL_subname);
+
     /* ... <name> ... */
     lex_read_space(0);
     if (!isALPHA_A(*BUFPTR)) {
@@ -47,14 +50,14 @@ static int inline_keyword_handler(pTHX_ char *keyword_ptr, STRLEN keyword_len, O
         name[namepos++] = *BUFPTR++;
     }
     name[namepos] = '\0';
-    subnamesv = newSVpvn(name, namepos);
+    sv_setpvn(PL_subname, name, namepos);
 
     const I32 floor = start_subparse(FALSE,0);
 
     /* ( '$' <name> ',' '$' <name> ) */
     lex_read_space(0);
     if (*BUFPTR++ != '(') {
-        croak("Expected a signature for %s\n", SvPVX(subnamesv));
+        croak("Expected a signature for "SVf"\n", SVfARG(PL_subname));
     }
 
     lex_read_space(0);
@@ -104,8 +107,14 @@ static int inline_keyword_handler(pTHX_ char *keyword_ptr, STRLEN keyword_len, O
         SvREFCNT_inc_simple_void(PL_compcv);
         SAVEFREESV(PL_compcv);
         OP* block = parse_block(0);
-        OP* nameop = newSVOP(OP_CONST, 0, subnamesv);
+        OP* nameop = newSVOP(OP_CONST, 0, newSVsv(PL_subname));
         const CV* cv = newATTRSUB(floor, nameop, NULL, NULL, block);
+        OP* o = CvSTART(cv);
+        while (o) {
+            if (!cloneable_op(o))
+                croak("%" SVf " is not inlineable", SVfARG(PL_subname));
+            o = o->op_next;
+        }
         cv_set_call_checker((CV*)cv, inline_cv, (SV*)cv);
     } else {
         croak("Parse error: Expected a block after the inline sub declaration");
