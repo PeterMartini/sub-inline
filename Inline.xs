@@ -111,8 +111,9 @@ static int inline_keyword_handler(pTHX_ char *keyword_ptr, STRLEN keyword_len, O
         const CV* cv = newATTRSUB(floor, nameop, NULL, NULL, block);
         OP* o = CvSTART(cv);
         while (o) {
-            if (!cloneable_op(o))
-                croak("%" SVf " is not inlineable", SVfARG(PL_subname));
+            const SV * const errorsv = clone_check(o);
+            if (errorsv)
+                croak("%" SVf, SVfARG(errorsv));
             o = o->op_next;
         }
         cv_set_call_checker((CV*)cv, inline_cv, (SV*)cv);

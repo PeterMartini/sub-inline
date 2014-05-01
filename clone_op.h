@@ -3,7 +3,7 @@
 
 OP * clone_op(OP *o);
 
-static bool cloneable_op(const OP * const o)
+static const SV * const clone_check(pTHX_ const OP * const o)
 {
     assert(o);
     switch (o->op_type) {
@@ -12,9 +12,9 @@ static bool cloneable_op(const OP * const o)
         case OP_PUSHMARK:
         case OP_CONST:
         case OP_PRINT:
-            return TRUE;
+            return NULL;
         default:
-            return FALSE;
+            return sv_2mortal(newSVpvf("Unsupported op type: %s", PL_op_name[o->op_type]));
     }
 }
 
