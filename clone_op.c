@@ -12,7 +12,7 @@
  *
  */
 
-OP * clone_op(OP *o)
+OP * clone_op(pTHX_ OP *o)
 {
     OP * clone = NULL;
 

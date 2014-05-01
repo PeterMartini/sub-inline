@@ -16,7 +16,7 @@
 
 static OP * inline_cv(pTHX_ OP *op, GV *namegv, SV *ckobj)
 {
-    OP *o = clone_op(CvROOT((CV*)ckobj));
+    OP *o = clone_op(aTHX_ CvROOT((CV*)ckobj));
     return o;
 }
 
