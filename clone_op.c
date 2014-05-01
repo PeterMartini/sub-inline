@@ -25,20 +25,11 @@ OP * clone_op(pTHX_ OP *o)
         OP *first = NULL;
         OP *last = NULL;
         do {
-            OP * o = clone_op(kid);
-            if (!o) continue;
-            if (!first) first = o;
-            if (last) {
-                last->op_sibling = o;
-            }
-            last = o;
+            OP * child = clone_op(kid);
+            if (!child) continue;
+            clone = op_append_elem(o->op_type, clone, child);
         } while (kid = kid->op_sibling);
-        if (o->op_type == OP_PRINT) {
-            clone = newLISTOP(o->op_type, OPf_KIDS, first, last);
-            return clone;
-        } else {
-            return first;
-        }
+        return clone;
     } else switch (o->op_type) {
         case OP_CONST:
             return newSVOP(o->op_type, 0, cSVOPo_sv);
