@@ -18,8 +18,6 @@ OP * clone_op(pTHX_ OP *o)
 
     if (o->op_type == OP_LEAVESUB)
         return clone_op(cUNOPo->op_first);
-    else if (o->op_type == OP_NEXTSTATE)
-        return NULL;
     else if (o->op_flags & OPf_KIDS) {
         OP *kid = cUNOPo->op_first;
         OP *first = NULL;
@@ -35,6 +33,8 @@ OP * clone_op(pTHX_ OP *o)
             return newSVOP(o->op_type, 0, cSVOPo_sv);
         case OP_PUSHMARK:
             return newOP(o->op_type, 0);
+        case OP_NEXTSTATE:
+            return newSTATEOP((U8)o->op_flags, NULL, NULL);
         case OP_NULL:
             return NULL;
         default:
