@@ -44,6 +44,8 @@ OP * clone_op(pTHX_ OP *o)
             return newSVOP(o->op_type, 0, cSVOPo_sv);
         case OP_PUSHMARK:
             return newOP(o->op_type, 0);
+        case OP_NULL:
+            return NULL;
         default:
             croak("Unsupported op type: %s", PL_op_name[o->op_type]);
     }

@@ -16,6 +16,7 @@ static const SV * const clone_check(pTHX_ const OP * const o)
         case OP_PUSHMARK:
         case OP_CONST:
         case OP_PRINT:
+        case OP_NULL:
             return NULL;
         default:
             return sv_2mortal(newSVpvf("Unsupported op type: %s", PL_op_name[o->op_type]));
