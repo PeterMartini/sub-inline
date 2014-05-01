@@ -8,6 +8,10 @@ static const SV * const clone_check(pTHX_ const OP * const o)
     assert(o);
     switch (o->op_type) {
         case OP_NEXTSTATE:
+            if(CopLABEL(o))
+                return sv_2mortal(newSVpvs("Statements with labels are not currently supported"));
+            else
+                return NULL;
         case OP_LEAVESUB:
         case OP_PUSHMARK:
         case OP_CONST:
