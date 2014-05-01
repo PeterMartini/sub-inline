@@ -39,7 +39,6 @@ OP * clone_op(OP *o)
         } else {
             return first;
         }
-        return clone;
     } else switch (o->op_type) {
         case OP_CONST:
             return newSVOP(o->op_type, 0, cSVOPo_sv);
