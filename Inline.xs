@@ -120,7 +120,7 @@ static int inline_keyword_handler(pTHX_ char *keyword_ptr, STRLEN keyword_len, O
         croak("Parse error: Expected a block after the inline sub declaration");
     }
 
-    *op_ptr = newOP(OP_NULL, 0);
+    *op_ptr = NULL;
     return KEYWORD_PLUGIN_STMT;
 }
 
