@@ -109,6 +109,9 @@ static int inline_keyword_handler(pTHX_ char *keyword_ptr, STRLEN keyword_len, O
         OP* block = parse_block(0);
         OP* nameop = newSVOP(OP_CONST, 0, newSVsv(PL_subname));
         const CV* cv = newATTRSUB(floor, nameop, NULL, NULL, block);
+        if (!cv) {
+            return KEYWORD_PLUGIN_DECLINE;
+        }
         OP* o = CvSTART(cv);
         while (o) {
             const SV * const errorsv = clone_check(o);
