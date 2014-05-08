@@ -12,18 +12,20 @@
  *
  */
 
-OP * clone_op(pTHX_ OP *o)
+OP * clone_op(pTHX_
+    const OP * const o,
+    const unsigned int paramcount)
 {
     OP * clone = NULL;
 
     if (o->op_type == OP_LEAVESUB)
-        return clone_op(cUNOPo->op_first);
+        return clone_op(cUNOPo->op_first, paramcount);
     else if (o->op_flags & OPf_KIDS) {
         OP *kid = cUNOPo->op_first;
         OP *first = NULL;
         OP *last = NULL;
         do {
-            OP * child = clone_op(kid);
+            OP * child = clone_op(kid, paramcount);
             if (!child) continue;
             clone = op_append_elem(o->op_type, clone, child);
         } while (kid = kid->op_sibling);

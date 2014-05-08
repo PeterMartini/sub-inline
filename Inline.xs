@@ -19,7 +19,7 @@ static OP * inline_cv(pTHX_ OP *op, GV *namegv, SV* ckobj)
     const AV * details = (AV*)ckobj;
     const CV * const cv = (CV*)AvARRAY(details)[0];
     const unsigned int paramcount = SvIV(AvARRAY(details)[1]);
-    OP *o = clone_op(aTHX_ CvROOT(cv));
+    OP *o = clone_op(aTHX_ CvROOT(cv), paramcount);
     return o;
 }
 

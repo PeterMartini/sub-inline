@@ -1,7 +1,7 @@
 #ifndef SUB_INLINE_CLONE_OP_H
 #define SUB_INLINE_CLONE_OP_H
 
-OP * clone_op(pTHX_ OP *o);
+OP * clone_op(pTHX_ const OP * const o, const unsigned int paramcount);
 
 static const SV * const clone_check(pTHX_ const OP * const o)
 {
