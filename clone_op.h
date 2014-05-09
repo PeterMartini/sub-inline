@@ -12,11 +12,13 @@ static const SV * const clone_check(pTHX_ const OP * const o)
                 return sv_2mortal(newSVpvs("Statements with labels are not currently supported"));
             else
                 return NULL;
-        case OP_LEAVESUB:
-        case OP_PUSHMARK:
+        case OP_CONCAT:
         case OP_CONST:
-        case OP_PRINT:
+        case OP_LEAVESUB:
         case OP_NULL:
+        case OP_PADSV:
+        case OP_PRINT:
+        case OP_PUSHMARK:
             return NULL;
         default:
             return sv_2mortal(newSVpvf("Unsupported op type: %s", PL_op_name[o->op_type]));
